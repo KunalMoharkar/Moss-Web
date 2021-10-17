@@ -10,10 +10,34 @@
 
         <form action="" method="post" enctype="multipart/form-data">
             {%csrf_token%}
-            <label for="files">Select files:</label>
-            <input type="file" id="files" name="files" multiple><br><br>
+
+            <label for="user1">Enter name of user 1:</label>
+            <input type="text" id="user1" name="user1"><br><br>
+            <label for="files1">Select files for user1:</label>
+            <input type="file" id="files1" name="files1" multiple><br><br>
+
+            
+            <label for="user2">Enter name of user 2:</label>
+            <input type="text" id="user2" name="user2"><br><br>
+            <label for="files">Select files for user2:</label>
+            <input type="file" id="files2" name="files2" multiple><br><br>
+
+            <label for="lang">Choose Language:</label>
+
+            <select name="lang" id="lang">
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cc">C++</option>
+                <option value="c">C</option>
+                <option value="javascript">JavaScript</option>
+            </select>
+
+
             <input type="submit">
+
           </form>
+
+          {{result}}
     </body>
 
 </html>
