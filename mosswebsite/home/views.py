@@ -33,11 +33,46 @@ def get_results_url(dict_map, lang):
 
     return url
 
+def validate_file_size(size):
+
+    size_in_mb = (size//1024)//1024
+
+    if size_in_mb > 1.1:
+
+        return False
+    
+    return True
+
+
+
+def validate_files(dict_map):
+
+    allowed_extension = ["py","java","c","js","cpp"]
+
+    for key in dict_map:
+
+        user  = key
+        myfiles = dict_map[user]
+
+        for file in myfiles:
+            filename = file.name
+            
+            if not validate_file_size(file.size):
+
+                return False, "single file size cannot exceed 1 MB"
+
+            ext = filename.split('.')[1]
+            
+            if ext not in allowed_extension:
+
+                return False, "File format not supported"
+    
+    return True, None
+
+
 
 def home(request):
 
-   
-   
     if request.method == "POST":
 
         #extract attributes from post request
@@ -48,29 +83,46 @@ def home(request):
         lang = request.POST['lang']
 
         print(lang)
+
         #create a dictionary of params
         dict_map = {}
         dict_map[user1] = myfiles1
         dict_map[user2] = myfiles2
 
+        #validate file size and extensions
+        files_valid, msg = validate_files(dict_map)
 
-        fs = FileSystemStorage()
+        #save the files in media
+        #delete previous files with same username
+        if files_valid:
 
-        for key in dict_map:
+            fs = FileSystemStorage()
 
-            user  = key
-            myfiles = dict_map[user]
+            for key in dict_map:
 
-            if fs.exists(user):
-                files = fs.listdir(user)[1]
+                user  = key
+                myfiles = dict_map[user]
 
-                for f in files:
-                    fs.delete(f"{user}/{f}")
+                if fs.exists(user):
+                    files = fs.listdir(user)[1]
 
-            for file in myfiles:
-                filename = fs.save(f"{user}/{file.name}", file)
+                    for f in files:
+                        fs.delete(f"{user}/{f}")
 
-        res_url = get_results_url(dict_map,lang)
-        return render(request,"home.html", {'result':res_url})
+                for file in myfiles:
+                    filename = fs.save(f"{user}/{file.name}", file)
+
+            res_url = get_results_url(dict_map,lang)
+            
+            #check valid result url
+            if "http" not in res_url:
+                 return render(request,"home.html", {'error':"Unknown Error Occured"})
+
+            return render(request,"home.html", {'result':res_url})
+        
+        else:
+
+            return render(request,"home.html", {'error':msg})
+
 
     return render(request,"home.html")

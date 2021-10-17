@@ -5,7 +5,7 @@
 <head>
     <title>MOSS similarity Test</title>
     <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -23,60 +23,146 @@
 
     <div class="container">
 
-    <div class="container p-3 my-3 bg-dark text-white">
-        <h2>Test Similarity</h2>
-    </div>
-    
+        <div class="container p-3 my-3 bg-dark text-white">
+            <h2>MOSS Similarity</h2>
+        </div>
 
-    <form action="" method="post" enctype="multipart/form-data">
-        {%csrf_token%}
 
-        <div class="row">
+        <form action="" method="post" enctype="multipart/form-data">
+            {%csrf_token%}
 
-        <div class="col-sm-6">
-            <div class="form-group">
-            <label for="user1">Enter name of user 1:</label>
-            <input class="form-control" type="text" id="user1" name="user1">
+            <div class="row">
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="user1">Enter name of user 1:</label>
+                        <input class="form-control" type="text" id="user1" name="user1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="files1">Select files for user 1:</label>
+                        <input type="file" id="files1" name="files1" multiple onchange="myFunction1()" required>
+                        <br>
+                        <p><b>Tip: use ctrl key to select multiple files</b></p>
+                    </div>
+
+                    <p id="demo1"></p>
+
+
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="user2">Enter name of user 2:</label>
+                        <input class="form-control" type="text" id="user2" name="user2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="files">Select files for user 2:</label>
+                        <input type="file" id="files2" name="files2" multiple onchange="myFunction2()" required>
+                    </div>
+
+                    <p id="demo2"></p>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="lang">Choose Language:</label>
+
+                        <select class="form-control" name="lang" id="lang">
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cc">C++</option>
+                            <option value="c">C</option>
+                            <option value="javascript">JavaScript</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-6" style="margin-top: 25px;">
+                    <button type="submit" class="btn btn-primary">Check Similarity</button>
+                </div>
             </div>
-            <div class="form-group">
-            <label for="files1">Select files for user1:</label>
-            <input type="file" id="files1" name="files1" multiple>
-            </div>
-        </div>
 
-        <div class="col-sm-6">
-            <div class="form-group">
-            <label for="user2">Enter name of user 2:</label>
-            <input class="form-control" type="text" id="user2" name="user2">
-            </div>
-            <label for="files">Select files for user2:</label>
-            <input type="file" id="files2" name="files2" multiple><br><br>
-        </div>
-        
-        <div class="col-sm-6">
-        <div class="form-group">
-            <label for="lang">Choose Language:</label>
-
-            <select class="form-control" name="lang" id="lang">
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="cc">C++</option>
-                <option value="c">C</option>
-                <option value="javascript">JavaScript</option>
-            </select>
-        </div>
-        </div>
-
-
-        <div class="col-sm-6" style="margin-top: 25px;">
-            <button type="submit" class="btn btn-primary">Check Similarity</button>
-        </div>
-    </div>
-
-    </form>
+        </form>
         {% if result%}
-       <a class="btn btn-success" target="blank" href={{result}}>View Results</a>
+        <a class="btn btn-success" target="blank" href={{result}}>View Results</a>
         {%endif%}
+
+        {%if error%}
+        <div class="alert alert-danger">{{error}}</div>
+        {%endif%}
+
+        <div class="container p-2 my-3 bg-dark text-white text-center">
+            <b>छात्र हित में जारी &#128521;</b>
+        </div>
     </div>
+
+    <script>
+        function myFunction1() {
+
+            var x = document.getElementById("files1");
+            console.log(x.files)
+            var txt = "";
+            if ('files' in x) {
+                if (x.files.length == 0) {
+                    txt = "Select one or more files.";
+                } else {
+                    for (var i = 0; i < x.files.length; i++) {
+                        txt += "<br><strong>" + (i + 1) + ". </strong>";
+                        var file = x.files[i];
+                        if ('name' in file) {
+                            txt += file.name;
+                        }
+                        if ('size' in file) {
+                            txt += " ( " + file.size + " bytes )";
+                        }
+                    }
+                }
+            }
+            else {
+                if (x.value == "") {
+                    txt += "Select one or more files.";
+                } else {
+                    txt += "The files property is not supported by your browser!";
+                    txt += "<br>The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead. 
+                }
+            }
+            document.getElementById("demo1").innerHTML = txt;
+        }
+
+        function myFunction2() {
+
+            var x = document.getElementById("files2");
+            var txt = "";
+            if ('files' in x) {
+                if (x.files.length == 0) {
+                    txt = "Select one or more files.";
+                } else {
+                    for (var i = 0; i < x.files.length; i++) {
+                        txt += "<br><strong>" + (i + 1) + ". </strong>";
+                        var file = x.files[i];
+                        if ('name' in file) {
+                            txt += file.name;
+                        }
+                        if ('size' in file) {
+                            txt += " ( " + file.size + " bytes )";
+                        }
+                    }
+                }
+            }
+            else {
+                if (x.value == "") {
+                    txt += "Select one or more files.";
+                } else {
+                    txt += "The files property is not supported by your browser!";
+                    txt += "<br>The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead. 
+                }
+            }
+            document.getElementById("demo2").innerHTML = txt;
+        }
+    </script>
+
+
 </body>
+
 </html>
